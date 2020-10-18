@@ -1,0 +1,14 @@
+*{ 
+  margin: 0px;
+  padding: 0px;
+
+}
+
+.header {
+  background-color: yellowgreen;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  justify-content: space-between;
+
+}
