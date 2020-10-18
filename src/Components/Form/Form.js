@@ -1,62 +1,60 @@
-import React, { Component } from "react";
-import "./Form.css";
-import axios from "axios";
+import React, {Component} from 'react';
+import axios from 'axios';
 
-class Form extends Component {
-  constructor() {
-    super();
+export default class Form extends Component{
+    constructor(){
+        super()
+        this.state={
+            name:'',
+            price:0,
+            imgurl:''
+        }
+    }
 
-    this.state = {
-      name: "",
-      price: 0,
-      image: "",
-    };
-  }
+    addProduct = () => {
+        let {name, price, imgurl } = this.state
+        axios.post('/api/product', {name, price, imgurl}).then(response => {
+            this.setState({
+                name: '',
+                price: '',
+                imgurl: ''
+            })
+            this.props.getProducts(response.data)
+        })
+    }
 
-  handleChange = (e) => {
-    this.setState({ [e.target.name]: e.target.value });
-  };
-  submit = () => {
-    axios
-      .post("/api/inventory", this.state)
-      .then((response) => {
-        console.log(response);
-        axios.get("/api/inventory").then((inventoryResponse) => {
-          this.props.updateInventory(inventoryResponse.data);
-          this.setState({ name: "", price: 0, image: "" });
-        });
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
+    handleChange = (val, key) => {
+        let obj = {}
+        obj[key] = val 
+        this.setState(obj)
+    }
+    clearValues = () =>{
+        this.setState({
+            name: '',
+            price: '',
+            imgurl: ''
+        })
+    }
 
-  render() {
-    return (
-      <div className='form-container'>
-        <div className="form">
-          <img id="image" />
-          {this.state.image}
-          <p>Image Url:</p>
-          <input onChange={this.handleChange} name="image"></input>
-          <p>Product Name:</p>
-          <input
-            name="name"
-            onChange={(e) => this.setState({ name: e.target.value })}
-          ></input>
-          <p>Price:</p>
-          <input
-            name="price"
-            onChange={(e) => this.setState({ price: e.target.value })}
-          ></input>
-          <button id="button1">CANCEL</button>
-          <button id="button2" onClick={this.submit}>
-            ADD TO INVENTORY
-          </button>
-        </div>
-      </div>
-    );
-  }
+    render(){
+        return(
+            <div id="form">
+                <img className='form-image' src={this.state.imgurl} />
+                <div>Image URL: 
+                    <input value={this.state.imgurl} onChange={(e) => this.handleChange(e.target.value, 'imgurl')}/>
+                </div>
+                <div>Product Name: 
+                    <input value={this.state.name} onChange={(e) => this.handleChange(e.target.value, 'name')}/>
+                </div>
+                <div>Price: 
+                    <input value={this.state.price} onChange={(e) => this.handleChange(e.target.value, 'price')}/>
+                </div>
+                <div>
+                <button className='button' onClick={this.clearValues}>Cancel</button>
+                <button className='button' onClick={this.addProduct}>Add to Inventory</button>
+                </div>
+
+            </div>
+        )
+    }
 }
-
-export default Form;

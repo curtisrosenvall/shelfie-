@@ -1,42 +1,66 @@
-import React, { Component } from "react";
-import "./App.css";
-import Dashboard from "./Components/Dashboard/Dashboard";
-import Form from "./Components/Form/Form";
-import Header from "./Components/Header/Header";
-import axios from "axios";
-// import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import React, { Component } from 'react';
+import './App.css';
+
+import Header from './Components/Header/Header';
+import Dashboard from './Components/Dashboard/Dashboard';
+import Form from './Components/Form/Form';
+import axios from 'axios';
 
 class App extends Component {
-  constructor() {
-    super();
-
+  constructor(){
+    super()
     this.state = {
-      inventory: [],
-    };
+      inventory:[]
+    }
+    this.getProducts  = this.getProducts.bind(this)
+    this.deleteProduct = this.deleteProduct.bind(this)
   }
-  componentDidMount() {
-    axios.get("/api/inventory").then((inventoryResponse) => {
-      this.updateInventory(inventoryResponse.data);
-      this.setState({ name: "", price: 0, image: "" });
-    });
-  }
-  updateInventory = (data) => {
-    console.log("update", this.state.inventory);
+  // Dunno why this needs to be refreshed to be presented
+  // Deal with it later
 
-    this.setState({ inventory: data });
-    console.log("update", this.state.inventory);
-  };
+  componentDidMount() {
+    axios.get('/api/inventory').then( response => {
+      console.log('hit api')
+      this.setState({
+        inventory: response.data
+      })
+    }).catch( err => {
+      console.log('mfr',err)
+    })
+  }
+  getProducts() {
+    axios.get('/api/inventory').then( response => {
+      console.log('hit api')
+      this.setState({
+        inventory: response.data
+      })
+    }).catch( err => {
+      console.log('mfr',err)
+    })
+  }
+  deleteProduct(id) {
+    axios.delete(`api/inventory/${id}`).then(
+      res =>{
+          this.setState({
+          inventory : res.data
+          })
+      }
+  
+  );
+  }
+
   render() {
     return (
       <div>
-        <Header />
-        <div className="dashboard-container">
+        <Header/>
+        <div className='body-container'>
           <Dashboard
-            inventory={this.state.inventory}
-            updateInventory={this.updateInventory}
+          inventory={this.state.inventory}
+          delete={this.deleteProduct}
           />
-
-          <Form updateInventory={this.updateInventory} />
+          <Form
+          getProducts={this.getProducts}
+          />
         </div>
       </div>
     );
